@@ -3,6 +3,7 @@ using Backend.Persistence.Entities;
 using Backend.Services.Helpers;
 using Backend.Services.Helpers.Auth;
 using Backend.Settings;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services;
 
@@ -31,6 +32,16 @@ public class EventService
         if (events.Count == 0)
             return new ServiceResponse<List<Event>>(null, false, StatusCodes.Status204NoContent,
                 "Could not find any events");
+
+        return new ServiceResponse<List<Event>>(events, true, StatusCodes.Status200OK);
+    }
+
+    public async Task<ServiceResponse<List<Event>>> GetEventRange(int startfrom, int amount)
+    {
+        if (startfrom < 0) return new ServiceResponse<List<Event>>(null, false, StatusCodes.Status204NoContent,
+            "Could not find any events");
+        
+        var events = (await _db.Events.OrderBy(x => x.ID).ToListAsync()).GetRange(startfrom, amount);
 
         return new ServiceResponse<List<Event>>(events, true, StatusCodes.Status200OK);
     }

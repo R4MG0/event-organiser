@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Backend.DTOs;
+﻿using System.Runtime.ExceptionServices;
 using Backend.DTOs.UserDto;
 using Backend.Persistence.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -28,40 +27,39 @@ public class ServiceResponse<T>
 
     public ObjectResult ToObjectResult()
     {
+        if (Payload == null)
+            return new ObjectResult(Response)
+            {
+                StatusCode = StatusCode
+            };
+
         return new ObjectResult(Payload)
         {
             StatusCode = StatusCode
         };
     }
 
+    [Obsolete("ToUserResponseDto is deprecated, please use the GenericToClass method in addition to the Mapper service.")]
     public ServiceResponse<UserResponseDto> ToUserResponseDto(string? jwt = "")
     {
+        // TODO: userPayload is null, why?
+
         if (Payload is not User userPayload)
             throw new InvalidCastException("cannot cast " + typeof(T) + " to " + typeof(UserResponseDto));
-        
-        User user = (User)(object)Payload;
 
         UserResponseDto userResponseDto = new()
         {
-            Id = user.Id,
+            Id = userPayload.Id,
             Jwt = jwt,
-            Username = user.Username,
-            CreatedAt = user.CreatedAt
+            Username = userPayload.Username,
+            CreatedAt = userPayload.CreatedAt
         };
         return new ServiceResponse<UserResponseDto>(userResponseDto, true, StatusCodes.Status200OK);
     }
     
-    public async Task<ServiceResponse<EventDto>> ToEventDto()
-    {
-        if (Payload is not Event eventPayload)
-            throw new InvalidCastException("cannot cast " + typeof(T) + " to " + typeof(EventDto));
-        
-        Event event_ = (Event)(object)Payload;
 
-        // TODO: Casting
-        
-        EventDto eventDto = event_ as EventDto;
-        
-        return new ServiceResponse<EventDto>(eventDto, true, StatusCodes.Status200OK);
+    public ServiceResponse<T2> GenericToClass<T2>(T2 payload)
+    {
+        return new ServiceResponse<T2>(payload, Success, StatusCode, Response);
     }
 }

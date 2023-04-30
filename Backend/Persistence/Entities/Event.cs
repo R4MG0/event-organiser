@@ -2,6 +2,7 @@
 
 public class Event
 {
+    public int ID;
     public User CreatedBy;
     public DateTime CreatedAt = DateTime.Now;
     public DateTime TakesPlaceOn;
