@@ -11,5 +11,7 @@ public class AutomapperProfile : Profile
     {
         CreateMap<User, UserResponseDto>().ReverseMap();
         CreateMap<User, UserRequestDto>().ReverseMap();
+        CreateMap<Event, EventResponseDto>().ReverseMap();
+        CreateMap<Event, EventRequestDto>().ReverseMap();
     }
 }

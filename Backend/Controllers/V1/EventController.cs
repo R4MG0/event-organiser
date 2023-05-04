@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace Backend.Controllers.V1;
 
-[Microsoft.AspNetCore.Components.Route("api/v1/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
 public class EventController : ControllerBase
 {
@@ -37,10 +37,23 @@ public class EventController : ControllerBase
         _userService = userService;
         _eventService = eventService;
     }
+    
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventResponseDto))]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(string))]
+    public async Task<IActionResult> CreateEvent([FromBody] EventRequestDto eventRequestDto)
+    {
+        var username = _jwtService.ValidateToken(Request.Headers["Authorization"]);
+        if (username.PayloadIsNull() || !(await _userService.UsernameExists(username.Payload)).Payload)
+            return Unauthorized(_responseMessages.NotLoggedIn);
+
+        ServiceResponse<Event> eventResult = _eventService.CreateEvent(eventRequestDto);
+        return eventResult.GenericToClass(_mapper.Map<List<EventResponseDto>>(eventResult.Payload)).ToObjectResult();
+    }
 
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventResponseDto))]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(string))]
     public async Task<IActionResult> GetAllEvents()
     {
@@ -49,11 +62,11 @@ public class EventController : ControllerBase
             return Unauthorized(_responseMessages.NotLoggedIn);
 
         ServiceResponse<List<Event>> events = _eventService.GetAllEvents();
-        return events.GenericToClass(_mapper.Map<List<EventDto>>(events.Payload)).ToObjectResult();
+        return events.GenericToClass(_mapper.Map<List<EventResponseDto>>(events.Payload)).ToObjectResult();
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDto))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventResponseDto))]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(string))]
     public async Task<IActionResult> GetEventRange([FromQuery(Name = "amount")] int amount, [FromQuery(Name = "startfrom")] int startfrom)
     {
@@ -63,6 +76,6 @@ public class EventController : ControllerBase
 
         var eventRange = await _eventService.GetEventRange(startfrom, amount);
 
-        return eventRange.GenericToClass(_mapper.Map<List<EventDto>>(eventRange.Payload)).ToObjectResult();
+        return eventRange.GenericToClass(_mapper.Map<List<EventResponseDto>>(eventRange.Payload)).ToObjectResult();
     }
 }
