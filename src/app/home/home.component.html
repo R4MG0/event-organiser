@@ -1,11 +1,12 @@
 <app-navigation></app-navigation>
 <div class="eventsContainer">
   <ng-container *ngFor="let event of events">
-    <div class="card">
+    <div class="card" (click)="goToDetails(event.id)">
       <div class="cardImage">
         <img [src]="event.image" alt="image of {{ event.title }}" />
       </div>
       <h2>{{ event.title }}</h2>
+      <p>{{ event.id }}</p>
       <p>{{ event.description }}</p>
     </div>
   </ng-container>
