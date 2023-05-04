@@ -1,2 +1,12 @@
 <app-navigation></app-navigation>
-<pre>{{ events | json }}</pre>
+<div class="eventsContainer">
+  <ng-container *ngFor="let event of events">
+    <div class="card">
+      <div class="cardImage">
+        <img [src]="event.image" alt="image of {{ event.title }}" />
+      </div>
+      <h2>{{ event.title }}</h2>
+      <p>{{ event.description }}</p>
+    </div>
+  </ng-container>
+</div>
