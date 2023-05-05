@@ -2,13 +2,15 @@
 
 public class Event
 {
-    public int ID;
-    public User CreatedBy;
+    public long Id { get; set; }
+    public DateTime TakesPlaceOn { get; set; }
+    public string TakesPlaceAt { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public string Image { get; set; }
+
+
+    public User CreatedBy { get; set; }
     public DateTime CreatedAt = DateTime.Now;
-    public DateTime TakesPlaceOn;
-    public string TakesPlaceAt = string.Empty;
-    public string Title = string.Empty;
-    public string Description = string.Empty;
-    public string Image = string.Empty;
     public List<User> IsAuthorizedFor = new List<User>();
 }

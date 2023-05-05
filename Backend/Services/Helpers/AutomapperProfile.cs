@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend.DTOs;
+using Backend.DTOs.EventDto;
 using Backend.DTOs.UserDto;
 using Backend.Persistence.Entities;
 

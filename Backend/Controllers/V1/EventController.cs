@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Backend.DTOs;
+using Backend.DTOs.EventDto;
 using Backend.Persistence.Entities;
 using Backend.Services;
 using Backend.Services.Helpers;
@@ -7,6 +8,7 @@ using Backend.Services.Helpers.Auth;
 using Backend.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace Backend.Controllers.V1;
@@ -27,12 +29,12 @@ public class EventController : ControllerBase
 
     private readonly UserService _userService;
 
-    public EventController(JwtService jwtService, IMapper mapper, ResponseSettings responseMessages,
+    public EventController(JwtService jwtService, IMapper mapper, IOptions<ResponseSettings> responseMessages,
         SecurityService security, UserService userService, EventService eventService)
     {
         _jwtService = jwtService;
         _mapper = mapper;
-        _responseMessages = responseMessages;
+        _responseMessages = responseMessages.Value;
         _security = security;
         _userService = userService;
         _eventService = eventService;
@@ -47,8 +49,10 @@ public class EventController : ControllerBase
         if (username.PayloadIsNull() || !(await _userService.UsernameExists(username.Payload)).Payload)
             return Unauthorized(_responseMessages.NotLoggedIn);
 
-        ServiceResponse<Event> eventResult = _eventService.CreateEvent(eventRequestDto);
-        return eventResult.GenericToClass(_mapper.Map<List<EventResponseDto>>(eventResult.Payload)).ToObjectResult();
+        var user = await _userService.GetUserByUsername(username.Payload);
+
+        ServiceResponse<Event> eventResult = await _eventService.CreateEvent(eventRequestDto, user.Payload);
+        return eventResult.GenericToClass(_mapper.Map<EventResponseDto>(eventResult.Payload)).ToObjectResult();
     }
 
 

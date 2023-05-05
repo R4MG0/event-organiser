@@ -19,8 +19,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 builder.Services
-    .AddScoped<UserService>()
-    .AddScoped<EventService>()
+    .AddTransient<UserService>()
+    .AddTransient<EventService>()
     .AddSingleton<SecurityService>()
     .AddSingleton<JwtService>()
     .AddAutoMapper(typeof(AutomapperProfile))

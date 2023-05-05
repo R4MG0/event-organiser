@@ -61,7 +61,7 @@ public class UserService : IUserService
     {
         try
         {
-            var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Username == username);
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.Username == username);
             return new ServiceResponse<User>(user, true, StatusCodes.Status200OK);
         }
         catch (Exception)

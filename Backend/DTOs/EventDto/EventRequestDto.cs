@@ -1,12 +1,12 @@
-﻿using Backend.Persistence.Entities;
+﻿using Microsoft.Build.Framework;
 
-namespace Backend.DTOs;
+namespace Backend.DTOs.EventDto;
 
 public class EventRequestDto
 {
-    public DateTime TakesPlaceOn;
-    public string TakesPlaceAt = string.Empty;
-    public string Title = string.Empty;
-    public string Description = string.Empty;
-    public string Image = string.Empty;
+    [Required] public DateTime TakesPlaceOn { get; set; }
+    [Required] public string TakesPlaceAt { get; set; }
+    [Required] public string Title { get; set; }
+    [Required] public string Description { get; set; }
+    [Required] public string Image { get; set; }
 }
